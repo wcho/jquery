@@ -295,12 +295,10 @@ QUnit.test( "child of a hidden elem (or unconnected node) has accurate inner/out
 	assert.equal( $divChild.outerWidth(), $divNormal.outerWidth(), "child of a hidden element outerWidth() is wrong see #9441" );
 	assert.equal( $divChild.outerWidth( true ), $divNormal.outerWidth( true ), "child of a hidden element outerWidth( true ) is wrong see #9300" );
 
-	// Support: IE 10 - 11, Edge 12 - 13+
-	// Child height is not always decimal
-	assert.equal( $divChild.height().toFixed( 3 ), $divNormal.height().toFixed( 3 ), "child of a hidden element height() is wrong see #9441" );
-	assert.equal( $divChild.innerHeight().toFixed( 3 ), $divNormal.innerHeight().toFixed( 3 ), "child of a hidden element innerHeight() is wrong see #9441" );
-	assert.equal( $divChild.outerHeight().toFixed( 3 ), $divNormal.outerHeight().toFixed( 3 ), "child of a hidden element outerHeight() is wrong see #9441" );
-	assert.equal( $divChild.outerHeight( true ).toFixed( 3 ), $divNormal.outerHeight( true ).toFixed( 3 ), "child of a hidden element outerHeight( true ) is wrong see #9300" );
+	assert.equal( $divChild.height(), $divNormal.height(), "child of a hidden element height() is wrong see #9441" );
+	assert.equal( $divChild.innerHeight(), $divNormal.innerHeight(), "child of a hidden element innerHeight() is wrong see #9441" );
+	assert.equal( $divChild.outerHeight(), $divNormal.outerHeight(), "child of a hidden element outerHeight() is wrong see #9441" );
+	assert.equal( $divChild.outerHeight( true ), $divNormal.outerHeight( true ), "child of a hidden element outerHeight( true ) is wrong see #9300" );
 
 	// tests that child div of an unconnected div works the same as a normal div
 	assert.equal( $divUnconnected.width(), $divNormal.width(), "unconnected element width() is wrong see #9441" );
@@ -308,12 +306,10 @@ QUnit.test( "child of a hidden elem (or unconnected node) has accurate inner/out
 	assert.equal( $divUnconnected.outerWidth(), $divNormal.outerWidth(), "unconnected element outerWidth() is wrong see #9441" );
 	assert.equal( $divUnconnected.outerWidth( true ), $divNormal.outerWidth( true ), "unconnected element outerWidth( true ) is wrong see #9300" );
 
-	// Support: IE 10 - 11, Edge 12 - 13+
-	// Child height is not always decimal
-	assert.equal( $divUnconnected.height().toFixed( 3 ), $divNormal.height().toFixed( 3 ), "unconnected element height() is wrong see #9441" );
-	assert.equal( $divUnconnected.innerHeight().toFixed( 3 ), $divNormal.innerHeight().toFixed( 3 ), "unconnected element innerHeight() is wrong see #9441" );
-	assert.equal( $divUnconnected.outerHeight().toFixed( 3 ), $divNormal.outerHeight().toFixed( 3 ), "unconnected element outerHeight() is wrong see #9441" );
-	assert.equal( $divUnconnected.outerHeight( true ).toFixed( 3 ), $divNormal.outerHeight( true ).toFixed( 3 ), "unconnected element outerHeight( true ) is wrong see #9300" );
+	assert.equal( $divUnconnected.height(), $divNormal.height(), "unconnected element height() is wrong see #9441" );
+	assert.equal( $divUnconnected.innerHeight(), $divNormal.innerHeight(), "unconnected element innerHeight() is wrong see #9441" );
+	assert.equal( $divUnconnected.outerHeight(), $divNormal.outerHeight(), "unconnected element outerHeight() is wrong see #9441" );
+	assert.equal( $divUnconnected.outerHeight( true ), $divNormal.outerHeight( true ), "unconnected element outerHeight( true ) is wrong see #9300" );
 
 	// teardown html
 	$divHiddenParent.remove();
@@ -372,12 +368,10 @@ QUnit.test( "box-sizing:border-box child of a hidden elem (or unconnected node) 
 	assert.equal( $divChild.outerWidth(), $divNormal.outerWidth(), "child of a hidden element outerWidth() is wrong see #10413" );
 	assert.equal( $divChild.outerWidth( true ), $divNormal.outerWidth( true ), "child of a hidden element outerWidth( true ) is wrong see #10413" );
 
-	// Support: IE 10 - 11, Edge 12 - 13+
-	// Child height is not always decimal
-	assert.equal( $divChild.height().toFixed( 3 ), $divNormal.height().toFixed( 3 ), "child of a hidden element height() is wrong see #10413" );
-	assert.equal( $divChild.innerHeight().toFixed( 3 ), $divNormal.innerHeight().toFixed( 3 ), "child of a hidden element innerHeight() is wrong see #10413" );
-	assert.equal( $divChild.outerHeight().toFixed( 3 ), $divNormal.outerHeight().toFixed( 3 ), "child of a hidden element outerHeight() is wrong see #10413" );
-	assert.equal( $divChild.outerHeight( true ).toFixed( 3 ), $divNormal.outerHeight( true ).toFixed( 3 ), "child of a hidden element outerHeight( true ) is wrong see #10413" );
+	assert.equal( $divChild.height(), $divNormal.height(), "child of a hidden element height() is wrong see #10413" );
+	assert.equal( $divChild.innerHeight(), $divNormal.innerHeight(), "child of a hidden element innerHeight() is wrong see #10413" );
+	assert.equal( $divChild.outerHeight(), $divNormal.outerHeight(), "child of a hidden element outerHeight() is wrong see #10413" );
+	assert.equal( $divChild.outerHeight( true ), $divNormal.outerHeight( true ), "child of a hidden element outerHeight( true ) is wrong see #10413" );
 
 	// tests that child div of an unconnected div works the same as a normal div
 	assert.equal( $divUnconnected.width(), $divNormal.width(), "unconnected element width() is wrong see #10413" );
@@ -385,12 +379,10 @@ QUnit.test( "box-sizing:border-box child of a hidden elem (or unconnected node) 
 	assert.equal( $divUnconnected.outerWidth(), $divNormal.outerWidth(), "unconnected element outerWidth() is wrong see #10413" );
 	assert.equal( $divUnconnected.outerWidth( true ), $divNormal.outerWidth( true ), "unconnected element outerWidth( true ) is wrong see #10413" );
 
-	// Support: IE 10 - 11, Edge 12 - 13+
-	// Child height is not always decimal
-	assert.equal( $divUnconnected.height().toFixed( 3 ), $divNormal.height().toFixed( 3 ), "unconnected element height() is wrong see #10413" );
-	assert.equal( $divUnconnected.innerHeight().toFixed( 3 ), $divNormal.innerHeight().toFixed( 3 ), "unconnected element innerHeight() is wrong see #10413" );
-	assert.equal( $divUnconnected.outerHeight().toFixed( 3 ), $divNormal.outerHeight().toFixed( 3 ), "unconnected element outerHeight() is wrong see #10413" );
-	assert.equal( $divUnconnected.outerHeight( true ).toFixed( 3 ), $divNormal.outerHeight( true ).toFixed( 3 ), "unconnected element outerHeight( true ) is wrong see #10413" );
+	assert.equal( $divUnconnected.height(), $divNormal.height(), "unconnected element height() is wrong see #10413" );
+	assert.equal( $divUnconnected.innerHeight(), $divNormal.innerHeight(), "unconnected element innerHeight() is wrong see #10413" );
+	assert.equal( $divUnconnected.outerHeight(), $divNormal.outerHeight(), "unconnected element outerHeight() is wrong see #10413" );
+	assert.equal( $divUnconnected.outerHeight( true ), $divNormal.outerHeight( true ), "unconnected element outerHeight( true ) is wrong see #10413" );
 
 	// teardown html
 	$divHiddenParent.remove();
@@ -550,6 +542,89 @@ QUnit.test( "width/height on an inline element with no explicitly-set dimensions
 		assert.equal( $elem[ "outer" + method ](), val + 6, "outer" + method + " should include padding and border" );
 		assert.equal( $elem[ "outer" + method ]( true ), val + 12, "outer" + method + "(true) should include padding, border, and margin" );
 	} );
+} );
+
+QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
+	assert.expect( 36 );
+
+	var i,
+		suffix = "",
+		updater = function( adjustment ) {
+			return function( i, old ) {
+				return old + adjustment;
+			};
+		},
+		parent = jQuery( "<div/>" )
+			.css( { position: "absolute", width: "1000px", height: "1000px" } )
+			.appendTo( "#qunit-fixture" ),
+		fraction = jQuery( "<div style='width:4.5px;'/>" ).appendTo( parent ).width() % 1,
+		borderWidth = 1,
+		padding = 2,
+		size = 100 + fraction,
+		scrollBox = {
+			position: "absolute",
+			overflow: "scroll",
+			width: size + "px",
+			height: size + "px"
+		},
+		borderBox = {
+			border: borderWidth + "px solid blue",
+			padding: padding + "px"
+		},
+		plainContentBox = jQuery( "<div />" )
+			.css( scrollBox )
+			.css( { "box-sizing": "content-box" } )
+			.appendTo( parent ),
+		contentBox = jQuery( "<div />" )
+			.css( scrollBox )
+			.css( borderBox )
+			.css( { "box-sizing": "content-box" } )
+			.appendTo( parent ),
+		borderBox = jQuery( "<div />" )
+			.css( scrollBox )
+			.css( borderBox )
+			.css( { "box-sizing": "border-box" } )
+			.appendTo( parent ),
+		$boxes = jQuery( [ plainContentBox[ 0 ], contentBox[ 0 ], borderBox[ 0 ] ] );
+
+	for ( i = 0; i < 3; i++ ) {
+		if ( i === 1 ) {
+			suffix = " after increasing inner* by " + i;
+			size += i;
+			$boxes.innerWidth( updater( i ) ).innerHeight( updater( i ) );
+		} else if ( i === 2 ) {
+			suffix = " after increasing outer* by " + i;
+			size += i;
+			$boxes.outerWidth( updater( i ) ).outerHeight( updater( i ) );
+		}
+
+		assert.equal( plainContentBox.innerWidth(), size,
+			"plain content-box innerWidth includes scroll gutter" + suffix );
+		assert.equal( plainContentBox.innerHeight(), size,
+			"plain content-box innerHeight includes scroll gutter" + suffix );
+		assert.equal( plainContentBox.outerWidth(), size,
+			"plain content-box outerWidth includes scroll gutter" + suffix );
+		assert.equal( plainContentBox.outerHeight(), size,
+			"plain content-box outerHeight includes scroll gutter" + suffix );
+
+		assert.equal( contentBox.innerWidth(), size + 2 * padding,
+			"content-box innerWidth includes scroll gutter" + suffix );
+		assert.equal( contentBox.innerHeight(), size + 2 * padding,
+			"content-box innerHeight includes scroll gutter" + suffix );
+		assert.equal( contentBox.outerWidth(), size + 2 * padding + 2 * borderWidth,
+			"content-box outerWidth includes scroll gutter" + suffix );
+		assert.equal( contentBox.outerHeight(), size + 2 * padding + 2 * borderWidth,
+			"content-box outerHeight includes scroll gutter" + suffix );
+
+		assert.equal( borderBox.innerWidth(), size - 2 * borderWidth,
+			"border-box innerWidth includes scroll gutter" + suffix );
+		assert.equal( borderBox.innerHeight(), size - 2 * borderWidth,
+			"border-box innerHeight includes scroll gutter" + suffix );
+		assert.equal( borderBox.outerWidth(), size,
+			"border-box outerWidth includes scroll gutter" + suffix );
+		assert.equal( borderBox.outerHeight(), size,
+			"border-box outerHeight includes scroll gutter" + suffix );
+	}
 } );
 
 } )();
