@@ -544,8 +544,50 @@ QUnit.test( "width/height on an inline element with no explicitly-set dimensions
 	} );
 } );
 
+QUnit.test( "width/height on an inline element with percentage dimensions (gh-3611)",
+	function( assert ) {
+		assert.expect( 4 );
+
+		jQuery( "<div id='gh3611' style='width: 100px;'>" +
+			"<span style='width: 100%; padding: 0 5px'>text</span>" +
+		"</div>" ).appendTo( "#qunit-fixture" );
+
+		var $elem = jQuery( "#gh3611 span" ),
+			actualWidth = $elem[ 0 ].getBoundingClientRect().width,
+			marginWidth = $elem.outerWidth( true ),
+			borderWidth = $elem.outerWidth(),
+			paddingWidth = $elem.innerWidth(),
+			contentWidth = $elem.width();
+
+		assert.equal( Math.round( borderWidth ), Math.round( actualWidth ),
+			".outerWidth(): " + borderWidth + " approximates " + actualWidth );
+		assert.equal( marginWidth, borderWidth, ".outerWidth(true) matches .outerWidth()" );
+		assert.equal( paddingWidth, borderWidth, ".innerWidth() matches .outerWidth()" );
+		assert.equal( contentWidth, borderWidth - 10, ".width() excludes padding" );
+	}
+);
+
+QUnit.test( "width/height on a table row with phantom borders (gh-3698)", function( assert ) {
+	assert.expect( 4 );
+
+	jQuery( "<table id='gh3698' style='border-collapse: separate; border-spacing: 0;'><tbody>" +
+		"<tr style='margin: 0; border: 10px solid black; padding: 0'>" +
+			"<td style='margin: 0; border: 0; padding: 0; height: 42px; width: 42px;'></td>" +
+		"</tr>" +
+	"</tbody></table>" ).appendTo( "#qunit-fixture" );
+
+	var $elem = jQuery( "#gh3698 tr" );
+
+	jQuery.each( [ "Width", "Height" ], function( i, method ) {
+		assert.equal( $elem[ "outer" + method ](), 42,
+			"outer" + method + " should match content dimensions" );
+		assert.equal( $elem[ "outer" + method ]( true ), 42,
+			"outer" + method + "(true) should match content dimensions" );
+	} );
+} );
+
 QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
-	assert.expect( 36 );
+	assert.expect( 48 );
 
 	var i,
 		suffix = "",
@@ -561,31 +603,43 @@ QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
 		borderWidth = 1,
 		padding = 2,
 		size = 100 + fraction,
-		scrollBox = {
-			position: "absolute",
-			overflow: "scroll",
-			width: size + "px",
-			height: size + "px"
-		},
-		borderBox = {
-			border: borderWidth + "px solid blue",
-			padding: padding + "px"
-		},
-		plainContentBox = jQuery( "<div />" )
-			.css( scrollBox )
-			.css( { "box-sizing": "content-box" } )
-			.appendTo( parent ),
-		contentBox = jQuery( "<div />" )
-			.css( scrollBox )
-			.css( borderBox )
-			.css( { "box-sizing": "content-box" } )
-			.appendTo( parent ),
-		borderBox = jQuery( "<div />" )
-			.css( scrollBox )
-			.css( borderBox )
-			.css( { "box-sizing": "border-box" } )
-			.appendTo( parent ),
-		$boxes = jQuery( [ plainContentBox[ 0 ], contentBox[ 0 ], borderBox[ 0 ] ] );
+		plainBox = jQuery( "<div />" )
+			.css( {
+				"box-sizing": "content-box",
+				position: "absolute",
+				overflow: "scroll",
+				width: size + "px",
+				height: size + "px"
+			} ),
+		contentBox = plainBox
+			.clone()
+			.css( {
+				border: borderWidth + "px solid blue",
+				padding: padding + "px"
+			} ),
+		borderBox = contentBox
+			.clone()
+			.css( { "box-sizing": "border-box" } ),
+		relativeBorderBox = borderBox
+			.clone()
+			.css( { position: "relative" } ),
+		$boxes = jQuery(
+			[ plainBox[ 0 ], contentBox[ 0 ], borderBox[ 0 ], relativeBorderBox[ 0 ] ]
+		).appendTo( parent ),
+
+		// Support: IE 9 only
+		// Computed width seems to report content width even with "box-sizing: border-box", and
+		// "overflow: scroll" actually _shrinks_ the element (gh-3699).
+		borderBoxLoss =
+			borderBox.clone().css( { overflow: "auto" } ).appendTo( parent )[ 0 ].offsetWidth -
+			borderBox[ 0 ].offsetWidth;
+
+	if ( borderBoxLoss > 0 ) {
+		borderBox.css( {
+			width: ( size + borderBoxLoss ) + "px",
+			height: ( size + borderBoxLoss ) + "px"
+		} );
+	}
 
 	for ( i = 0; i < 3; i++ ) {
 		if ( i === 1 ) {
@@ -598,13 +652,13 @@ QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
 			$boxes.outerWidth( updater( i ) ).outerHeight( updater( i ) );
 		}
 
-		assert.equal( plainContentBox.innerWidth(), size,
+		assert.equal( plainBox.innerWidth(), size,
 			"plain content-box innerWidth includes scroll gutter" + suffix );
-		assert.equal( plainContentBox.innerHeight(), size,
+		assert.equal( plainBox.innerHeight(), size,
 			"plain content-box innerHeight includes scroll gutter" + suffix );
-		assert.equal( plainContentBox.outerWidth(), size,
+		assert.equal( plainBox.outerWidth(), size,
 			"plain content-box outerWidth includes scroll gutter" + suffix );
-		assert.equal( plainContentBox.outerHeight(), size,
+		assert.equal( plainBox.outerHeight(), size,
 			"plain content-box outerHeight includes scroll gutter" + suffix );
 
 		assert.equal( contentBox.innerWidth(), size + 2 * padding,
@@ -624,6 +678,15 @@ QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
 			"border-box outerWidth includes scroll gutter" + suffix );
 		assert.equal( borderBox.outerHeight(), size,
 			"border-box outerHeight includes scroll gutter" + suffix );
+
+		assert.equal( relativeBorderBox.innerWidth(), size - 2 * borderWidth,
+			"relative border-box innerWidth includes scroll gutter" + suffix );
+		assert.equal( relativeBorderBox.innerHeight(), size - 2 * borderWidth,
+			"relative border-box innerHeight includes scroll gutter" + suffix );
+		assert.equal( relativeBorderBox.outerWidth(), size,
+			"relative border-box outerWidth includes scroll gutter" + suffix );
+		assert.equal( relativeBorderBox.outerHeight(), size,
+			"relative border-box outerHeight includes scroll gutter" + suffix );
 	}
 } );
 
