@@ -1,34 +1,34 @@
-QUnit.module( "basic", { teardown: moduleTeardown } );
+QUnit.module( "basic", { afterEach: moduleTeardown } );
 
 if ( jQuery.ajax ) {
 QUnit.test( "ajax", function( assert ) {
 	assert.expect( 4 );
 
-	var done = jQuery.map( new Array( 3 ), function() { return assert.async(); } );
+	var done = assert.async( 3 );
 
 	jQuery.ajax( {
 		type: "GET",
-		url: url( "data/name.php?name=foo" ),
+		url: url( "mock.php?action=name&name=foo" ),
 		success: function( msg ) {
 			assert.strictEqual( msg, "bar", "Check for GET" );
-			done.pop()();
+			done();
 		}
 	} );
 
 	jQuery.ajax( {
 		type: "POST",
-		url: url( "data/name.php" ),
+		url: url( "mock.php?action=name" ),
 		data: "name=peter",
 		success: function( msg ) {
 			assert.strictEqual( msg, "pan", "Check for POST" );
-			done.pop()();
+			done();
 		}
 	} );
 
-	jQuery( "#first" ).load( url( "data/name.html" ), function() {
+	jQuery( "#first" ).load( url( "name.html" ), function() {
 		assert.ok( /^ERROR/.test( jQuery( "#first" ).text() ),
 			"Check if content was injected into the DOM" );
-		done.pop()();
+		done();
 	} );
 } );
 }
@@ -36,7 +36,7 @@ QUnit.test( "ajax", function( assert ) {
 QUnit.test( "attributes", function( assert ) {
 	assert.expect( 6 );
 
-	var a = jQuery( "<a/>" ).appendTo( "#qunit-fixture" ),
+	var a = jQuery( "<a></a>" ).appendTo( "#qunit-fixture" ),
 		input = jQuery( "<input/>" ).appendTo( "#qunit-fixture" );
 
 	assert.strictEqual( a.attr( "foo", "bar" ).attr( "foo" ), "bar", ".attr getter/setter" );
@@ -56,7 +56,7 @@ if ( jQuery.css ) {
 QUnit.test( "css", function( assert ) {
 	assert.expect( 1 );
 
-	var div = jQuery( "<div/>" ).appendTo( "#qunit-fixture" );
+	var div = jQuery( "<div></div>" ).appendTo( "#qunit-fixture" );
 
 	assert.strictEqual( div.css( "width", "50px" ).css( "width" ), "50px", ".css getter/setter" );
 } );
@@ -66,7 +66,7 @@ if ( jQuery.fn.show && jQuery.fn.hide ) {
 QUnit.test( "show/hide", function( assert ) {
 	assert.expect( 2 );
 
-	var div = jQuery( "<div/>" ).appendTo( "#qunit-fixture" );
+	var div = jQuery( "<div></div>" ).appendTo( "#qunit-fixture" );
 
 	div.hide();
 	assert.strictEqual( div.css( "display" ), "none", "div hidden" );
@@ -76,25 +76,14 @@ QUnit.test( "show/hide", function( assert ) {
 }
 
 QUnit.test( "core", function( assert ) {
-	assert.expect( 25 );
+	assert.expect( 17 );
 
 	var elem = jQuery( "<div></div><span></span>" );
 
 	assert.strictEqual( elem.length, 2, "Correct number of elements" );
-	assert.strictEqual( jQuery.trim( "  hello   " ), "hello", "jQuery.trim" );
-
-	assert.strictEqual( jQuery.type( null ), "null", "jQuery.type(null)" );
-	assert.strictEqual( jQuery.type( undefined ), "undefined", "jQuery.type(undefined)" );
-	assert.strictEqual( jQuery.type( "a" ), "string", "jQuery.type(String)" );
 
 	assert.ok( jQuery.isPlainObject( { "a": 2 } ), "jQuery.isPlainObject(object)" );
 	assert.ok( !jQuery.isPlainObject( "foo" ), "jQuery.isPlainObject(String)" );
-
-	assert.ok( jQuery.isFunction( jQuery.noop ), "jQuery.isFunction(jQuery.noop)" );
-	assert.ok( !jQuery.isFunction( 2 ), "jQuery.isFunction(Number)" );
-
-	assert.ok( jQuery.isNumeric( "-2" ), "jQuery.isNumeric(String representing a number)" );
-	assert.ok( !jQuery.isNumeric( "" ), "jQuery.isNumeric(\"\")" );
 
 	assert.ok( jQuery.isXMLDoc( jQuery.parseXML(
 		"<?xml version='1.0' encoding='UTF-8'?><foo bar='baz'></foo>"
@@ -137,7 +126,7 @@ QUnit.test( "core", function( assert ) {
 QUnit.test( "data", function( assert ) {
 	assert.expect( 4 );
 
-	var elem = jQuery( "<div data-c='d'/>" ).appendTo( "#qunit-fixture" );
+	var elem = jQuery( "<div data-c='d'></div>" ).appendTo( "#qunit-fixture" );
 
 	assert.ok( !jQuery.hasData( elem[ 0 ] ), "jQuery.hasData - false" );
 	assert.strictEqual( elem.data( "a", "b" ).data( "a" ), "b", ".data getter/setter" );
@@ -149,7 +138,7 @@ QUnit.test( "dimensions", function( assert ) {
 	assert.expect( 3 );
 
 	var elem = jQuery(
-		"<div style='margin: 10px; padding: 7px; border: 2px solid black;' /> "
+		"<div style='margin: 10px; padding: 7px; border: 2px solid black;'></div> "
 	).appendTo( "#qunit-fixture" );
 
 	assert.strictEqual( elem.width( 50 ).width(), 50, ".width getter/setter" );
@@ -160,7 +149,7 @@ QUnit.test( "dimensions", function( assert ) {
 QUnit.test( "event", function( assert ) {
 	assert.expect( 1 );
 
-	var elem = jQuery( "<div/>" ).appendTo( "#qunit-fixture" );
+	var elem = jQuery( "<div></div>" ).appendTo( "#qunit-fixture" );
 
 	elem
 		.on( "click", function() {
@@ -179,22 +168,26 @@ QUnit.test( "manipulation", function( assert ) {
 
 	var child,
 		elem1 = jQuery( "<div><span></span></div>" ).appendTo( "#qunit-fixture" ),
-		elem2 = jQuery( "<div/>" ).appendTo( "#qunit-fixture" );
+		elem2 = jQuery( "<div></div>" ).appendTo( "#qunit-fixture" );
 
 	assert.strictEqual( elem1.text( "foo" ).text(), "foo", ".html getter/setter" );
 
 	assert.strictEqual(
-		elem1.html( "<span/>" ).html(),
+		elem1.html( "<span></span>" ).html(),
 		"<span></span>",
 		".html getter/setter"
 	);
 
-	assert.strictEqual( elem1.append( elem2 )[ 0 ].childNodes[ 1 ], elem2[ 0 ], ".append" );
+	assert.strictEqual(
+		elem1.append( elem2 )[ 0 ].childNodes[ elem1[ 0 ].childNodes.length - 1 ],
+		elem2[ 0 ],
+		".append"
+	);
 	assert.strictEqual( elem1.prepend( elem2 )[ 0 ].childNodes[ 0 ], elem2[ 0 ], ".prepend" );
 
 	child = elem1.find( "span" );
-	child.after( "<a/>" );
-	child.before( "<b/>" );
+	child.after( "<a></a>" );
+	child.before( "<b></b>" );
 
 	assert.strictEqual(
 		elem1.html(),
@@ -203,11 +196,13 @@ QUnit.test( "manipulation", function( assert ) {
 	);
 } );
 
-QUnit.test( "offset", function( assert ) {
+// Support: jsdom 13.2+
+// jsdom returns 0 for offset-related properties
+QUnit[ /jsdom\//.test( navigator.userAgent ) ? "skip" : "test" ]( "offset", function( assert ) {
 	assert.expect( 3 );
 
-	var parent = jQuery( "<div style='position:fixed;top:20px;'/>" ).appendTo( "#qunit-fixture" ),
-		elem = jQuery( "<div style='position:absolute;top:5px;'/>" ).appendTo( parent );
+	var parent = jQuery( "<div style='position:fixed;top:20px;'></div>" ).appendTo( "#qunit-fixture" ),
+		elem = jQuery( "<div style='position:absolute;top:5px;'></div>" ).appendTo( parent );
 
 	assert.strictEqual( elem.offset().top, 25, ".offset getter" );
 	assert.strictEqual( elem.position().top, 5, ".position getter" );

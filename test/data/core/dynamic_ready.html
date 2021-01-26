@@ -2,12 +2,12 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<script src="../../jquery.js"></script>
+	<script src="../jquery-1.9.1.js"></script>
 	<script>var $j = jQuery.noConflict();</script>
 	<script src="../iframeTest.js"></script>
 </head>
 <body>
-<iframe id="dont_return" src="dont_return.php"></iframe>
+<iframe id="dont_return" src="../mock.php?action=wait&wait=30"></iframe>
 <script>
 	var timeoutId, $,
 		timeoutFired = false;

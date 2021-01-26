@@ -1,7 +1,1 @@
-define( [
-	"../../core"
-], function( jQuery ) {
-	"use strict";
-
-	return jQuery.now();
-} );
+export default { guid: Date.now() };

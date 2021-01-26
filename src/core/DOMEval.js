@@ -1,16 +1,27 @@
-define( [
-	"../var/document"
-], function( document ) {
-	"use strict";
+import document from "../var/document.js";
 
-	function DOMEval( code, doc ) {
-		doc = doc || document;
+var preservedScriptAttributes = {
+	type: true,
+	src: true,
+	nonce: true,
+	noModule: true
+};
 
-		var script = doc.createElement( "script" );
+function DOMEval( code, node, doc ) {
+	doc = doc || document;
 
-		script.text = code;
-		doc.head.appendChild( script ).parentNode.removeChild( script );
+	var i,
+		script = doc.createElement( "script" );
+
+	script.text = code;
+	if ( node ) {
+		for ( i in preservedScriptAttributes ) {
+			if ( node[ i ] ) {
+				script[ i ] = node[ i ];
+			}
+		}
 	}
+	doc.head.appendChild( script ).parentNode.removeChild( script );
+}
 
-	return DOMEval;
-} );
+export default DOMEval;

@@ -1,10 +1,6 @@
-define( [
-	"../ajax"
-], function( jQuery ) {
+import jQuery from "../ajax.js";
 
-"use strict";
-
-jQuery._evalUrl = function( url ) {
+jQuery._evalUrl = function( url, options, doc ) {
 	return jQuery.ajax( {
 		url: url,
 
@@ -14,10 +10,16 @@ jQuery._evalUrl = function( url ) {
 		cache: true,
 		async: false,
 		global: false,
-		"throws": true
+		scriptAttrs: options.crossOrigin ? { "crossOrigin": options.crossOrigin } : undefined,
+
+		// Only evaluate the response if it is successful (gh-4126)
+		// dataFilter is not invoked for failure responses, so using it instead
+		// of the default converter is kludgy but it works.
+		converters: {
+			"text script": function() {}
+		},
+		dataFilter: function( response ) {
+			jQuery.globalEval( response, options, doc );
+		}
 	} );
 };
-
-return jQuery._evalUrl;
-
-} );

@@ -1,43 +1,43 @@
+"use strict";
+
 var fs = require( "fs" );
 
 module.exports = function( Release ) {
 
-	var
-		files = [
-			"dist/jquery.js",
-			"dist/jquery.min.js",
-			"dist/jquery.min.map",
-			"dist/jquery.slim.js",
-			"dist/jquery.slim.min.js",
-			"dist/jquery.slim.min.map",
-			"src/core.js"
-		],
-		cdn = require( "./release/cdn" ),
-		dist = require( "./release/dist" ),
-		ensureSizzle = require( "./release/ensure-sizzle" ),
+	const distFiles = [
+		"dist/jquery.js",
+		"dist/jquery.min.js",
+		"dist/jquery.min.map",
+		"dist/jquery.slim.js",
+		"dist/jquery.slim.min.js",
+		"dist/jquery.slim.min.map"
+	];
+	const filesToCommit = [
+		...distFiles,
+		"src/core.js"
+	];
+	const cdn = require( "./release/cdn" );
+	const dist = require( "./release/dist" );
 
-		npmTags = Release.npmTags;
+	const npmTags = Release.npmTags;
+
+	function setSrcVersion( filepath ) {
+		var contents = fs.readFileSync( filepath, "utf8" );
+		contents = contents.replace( /@VERSION/g, Release.newVersion );
+		fs.writeFileSync( filepath, contents, "utf8" );
+	}
 
 	Release.define( {
 		npmPublish: true,
 		issueTracker: "github",
 
 		/**
-		 * Ensure the repo is in a proper state before release
-		 * @param {Function} callback
-		 */
-		checkRepoState: function( callback ) {
-			ensureSizzle( Release, callback );
-		},
-
-		/**
-		 * Set the version in the src folder for distributing AMD
+		 * Set the version in the src folder for distributing ES modules
+		 * and in the amd folder for AMD.
 		 */
 		_setSrcVersion: function() {
-			var corePath = __dirname + "/../src/core.js",
-				contents = fs.readFileSync( corePath, "utf8" );
-			contents = contents.replace( /@VERSION/g, Release.newVersion );
-			fs.writeFileSync( corePath, contents, "utf8" );
+			setSrcVersion( `${ __dirname }/../src/core.js` );
+			setSrcVersion( `${ __dirname }/../amd/core.js` );
 		},
 
 		/**
@@ -49,13 +49,13 @@ module.exports = function( Release ) {
 		generateArtifacts: function( callback ) {
 			Release.exec( "grunt", "Grunt command failed" );
 			Release.exec(
-				"grunt custom:-ajax,-effects --filename=jquery.slim.js && " +
+				"grunt custom:slim --filename=jquery.slim.js && " +
 					"grunt remove_map_comment --filename=jquery.slim.js",
 				"Grunt custom failed"
 			);
 			cdn.makeReleaseCopies( Release );
 			Release._setSrcVersion();
-			callback( files );
+			callback( filesToCommit );
 		},
 
 		/**
@@ -76,7 +76,7 @@ module.exports = function( Release ) {
 		 */
 		dist: function( callback ) {
 			cdn.makeArchives( Release, function() {
-				dist( Release, files, callback );
+				dist( Release, distFiles, callback );
 			} );
 		}
 	} );
@@ -85,6 +85,6 @@ module.exports = function( Release ) {
 module.exports.dependencies = [
 	"archiver@1.3.0",
 	"shelljs@0.7.7",
-	"npm@4.4.1",
-	"chalk@1.1.3"
+	"inquirer@7.0.4",
+	"npm@4.4.1"
 ];

@@ -1,5 +1,1 @@
-define( function() {
-	"use strict";
-
-	return ( /^$|\/(?:java|ecma)script/i );
-} );
+export default ( /^$|^module$|\/(?:java|ecma)script/i );

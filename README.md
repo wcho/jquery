@@ -1,6 +1,10 @@
 [jQuery](https://jquery.com/) — New Wave JavaScript
 ==================================================
 
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjquery%2Fjquery.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjquery%2Fjquery?ref=badge_shield)
+
+[![Gitter](https://badges.gitter.im/jquery/jquery.svg)](https://gitter.im/jquery/jquery?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 Contribution Guides
 --------------------------------------
 
@@ -21,11 +25,11 @@ Environments in which to use jQuery
 What you need to build your own jQuery
 --------------------------------------
 
-In order to build jQuery, you need to have the latest Node.js/npm and git 1.7 or later. Earlier versions might work, but are not supported.
+To build jQuery, you need to have the latest Node.js/npm and git 1.7 or later. Earlier versions might work, but are not supported.
 
 For Windows, you have to download and install [git](https://git-scm.com/downloads) and [Node.js](https://nodejs.org/en/download/).
 
-OS X users should install [Homebrew](http://brew.sh/). Once Homebrew is installed, run `brew install git` to install git,
+macOS users should install [Homebrew](https://brew.sh/). Once Homebrew is installed, run `brew install git` to install git,
 and `brew install node` to install Node.js.
 
 Linux/BSD users should use their appropriate package managers to install git and Node.js, or build from source
@@ -35,13 +39,9 @@ if you swing that way. Easy-peasy.
 How to build your own jQuery
 ----------------------------
 
-Clone a copy of the main jQuery git repo by running:
+First, [clone the jQuery git repo](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository).
 
-```bash
-git clone git://github.com/jquery/jquery.git
-```
-
-Enter the jquery directory and run the build script:
+Then, enter the jquery directory and run the build script:
 ```bash
 cd jquery && npm run build
 ```
@@ -86,22 +86,14 @@ Some example modules that can be excluded are:
 - **deprecated**: Methods documented as deprecated but not yet removed.
 - **dimensions**: The `.width()` and `.height()` methods, including `inner-` and `outer-` variations.
 - **effects**: The `.animate()` method and its shorthands such as `.slideUp()` or `.hide("slow")`.
-- **event**: The `.on()` and `.off()` methods and all event functionality. Also removes `event/alias`.
-- **event/alias**: All event attaching/triggering shorthands like `.click()` or `.mouseover()`.
-- **event/focusin**: Cross-browser support for the focusin and focusout events.
-- **event/trigger**: The `.trigger()` and `.triggerHandler()` methods. Used by **alias** and **focusin** modules.
+- **event**: The `.on()` and `.off()` methods and all event functionality.
+- **event/trigger**: The `.trigger()` and `.triggerHandler()` methods.
 - **offset**: The `.offset()`, `.position()`, `.offsetParent()`, `.scrollLeft()`, and `.scrollTop()` methods.
 - **wrap**: The `.wrap()`, `.wrapAll()`, `.wrapInner()`, and `.unwrap()` methods.
 - **core/ready**: Exclude the ready module if you place your scripts at the end of the body. Any ready callbacks bound with `jQuery()` will simply be called immediately. However, `jQuery(document).ready()` will not be a function and `.on("ready", ...)` or similar will not be triggered.
 - **deferred**: Exclude jQuery.Deferred. This also removes jQuery.Callbacks. *Note* that modules that depend on jQuery.Deferred(AJAX, effects, core/ready) will not be removed and will still expect jQuery.Deferred to be there. Include your own jQuery.Deferred implementation or exclude those modules as well (`grunt custom:-deferred,-ajax,-effects,-core/ready`).
 - **exports/global**: Exclude the attachment of global jQuery variables ($ and jQuery) to the window.
 - **exports/amd**: Exclude the AMD definition.
-
-As a special case, you may also replace Sizzle by using a special flag `grunt custom:-sizzle`.
-
-- **sizzle**: The Sizzle selector engine. When this module is excluded, it is replaced by a rudimentary selector engine based on the browser's `querySelectorAll` method that does not support jQuery selector extensions or enhanced semantics. See the [selector-native.js](https://github.com/jquery/jquery/blob/master/src/selector-native.js) file for details.
-
-*Note*: Excluding Sizzle will also exclude all jQuery selector extensions (such as `effects/animatedSelector` and `css/hiddenVisibleSelectors`).
 
 The build process shows a message for each dependent module it excludes or includes.
 
@@ -150,10 +142,15 @@ grunt custom:-css
 Exclude a bunch of modules:
 
 ```bash
-grunt custom:-ajax,-css,-deprecated,-dimensions,-effects,-event/alias,-offset,-wrap
+grunt custom:-ajax/jsonp,-css,-deprecated,-dimensions,-effects,-offset,-wrap
 ```
 
-For questions or requests regarding custom builds, please start a thread on the [Developing jQuery Core](https://forum.jquery.com/developing-jquery-core) section of the forum. Due to the combinatorics and custom nature of these builds, they are not regularly tested in jQuery's unit test process. The non-Sizzle selector engine currently does not pass unit tests because it is missing too much essential functionality.
+There is also a special alias to generate a build with the same configuration as the official jQuery Slim build is generated:
+```bash
+grunt custom:slim
+```
+
+For questions or requests regarding custom builds, please start a thread on the [Developing jQuery Core](https://forum.jquery.com/developing-jquery-core) section of the forum. Due to the combinatorics and custom nature of these builds, they are not regularly tested in jQuery's unit test process.
 
 Running the Unit Tests
 --------------------------------------
@@ -323,20 +320,20 @@ fireNative( jQuery("#elem")[0], "click" );
 ### Add random number to url to stop caching ###
 
 ```js
-url( "some/url.php" );
+url( "some/url" );
 ```
 
 Example:
 
 ```js
-url("data/test.html");
+url("index.html");
 
-=> "data/test.html?10538358428943"
+=> "data/index.html?10538358428943"
 
 
-url("data/test.php?foo=bar");
+url("mock.php?foo=bar");
 
-=> "data/test.php?foo=bar&10538358345554"
+=> "data/mock.php?foo=bar&10538358345554"
 ```
 
 

@@ -1,98 +1,52 @@
-define( [
-	"../core",
-	"../var/document",
-	"../var/documentElement",
-	"../var/support"
-], function( jQuery, document, documentElement, support ) {
-
-"use strict";
+import document from "../var/document.js";
+import documentElement from "../var/documentElement.js";
+import support from "../var/support.js";
 
 ( function() {
 
-	// Executing both pixelPosition & boxSizingReliable tests require only one layout
-	// so they're executed at the same time to save the second computation.
-	function computeStyleTests() {
+var reliableTrDimensionsVal,
+	div = document.createElement( "div" );
 
-		// This is a singleton, we need to execute it only once
-		if ( !div ) {
-			return;
-		}
+// Finish early in limited (non-browser) environments
+if ( !div.style ) {
+	return;
+}
 
-		container.style.cssText = "position:absolute;left:-11111px;width:60px;" +
-			"margin-top:1px;padding:0;border:0";
-		div.style.cssText =
-			"position:relative;display:block;box-sizing:border-box;overflow:scroll;" +
-			"margin:auto;border:1px;padding:1px;" +
-			"width:60%;top:1%";
-		documentElement.appendChild( container ).appendChild( div );
+// Support: IE 10 - 11+
+// IE misreports `getComputedStyle` of table rows with width/height
+// set in CSS while `offset*` properties report correct values.
+// Support: Firefox 70+
+// Only Firefox includes border widths
+// in computed dimensions. (gh-4529)
+support.reliableTrDimensions = function() {
+	var table, tr, trStyle;
+	if ( reliableTrDimensionsVal == null ) {
+		table = document.createElement( "table" );
+		tr = document.createElement( "tr" );
 
-		var divStyle = window.getComputedStyle( div );
-		pixelPositionVal = divStyle.top !== "1%";
+		table.style.cssText = "position:absolute;left:-11111px;border-collapse:separate";
+		tr.style.cssText = "border:1px solid";
 
-		// Support: Android 4.0 - 4.3 only, Firefox <=3 - 44
-		reliableMarginLeftVal = divStyle.marginLeft === "12px";
+		// Support: Chrome 86+
+		// Height set through cssText does not get applied.
+		// Computed height then comes back as 0.
+		tr.style.height = "1px";
+		div.style.height = "9px";
 
-		// Support: Android 4.0 - 4.3 only, Safari <=9.1 - 10.1, iOS <=7.0 - 9.3
-		// Some styles come back with percentage values, even though they shouldn't
-		div.style.right = "60%";
-		pixelBoxStylesVal = divStyle.right === "36px";
+		documentElement
+			.appendChild( table )
+			.appendChild( tr )
+			.appendChild( div );
 
-		// Support: IE 9 - 11 only
-		// Detect misreporting of content dimensions for box-sizing:border-box elements
-		boxSizingReliableVal = divStyle.width === "36px";
+		trStyle = window.getComputedStyle( tr );
+		reliableTrDimensionsVal = ( parseInt( trStyle.height, 10 ) +
+				parseInt( trStyle.borderTopWidth, 10 ) +
+				parseInt( trStyle.borderBottomWidth, 10 ) ) === tr.offsetHeight;
 
-		// Support: IE 9 only
-		// Detect overflow:scroll screwiness (gh-3699)
-		div.style.position = "absolute";
-		scrollboxSizeVal = div.offsetWidth === 36 || "absolute";
-
-		documentElement.removeChild( container );
-
-		// Nullify the div so it wouldn't be stored in the memory and
-		// it will also be a sign that checks already performed
-		div = null;
+		documentElement.removeChild( table );
 	}
-
-	var pixelPositionVal, boxSizingReliableVal, scrollboxSizeVal, pixelBoxStylesVal,
-		reliableMarginLeftVal,
-		container = document.createElement( "div" ),
-		div = document.createElement( "div" );
-
-	// Finish early in limited (non-browser) environments
-	if ( !div.style ) {
-		return;
-	}
-
-	// Support: IE <=9 - 11 only
-	// Style of cloned element affects source element cloned (#8908)
-	div.style.backgroundClip = "content-box";
-	div.cloneNode( true ).style.backgroundClip = "";
-	support.clearCloneStyle = div.style.backgroundClip === "content-box";
-
-	jQuery.extend( support, {
-		boxSizingReliable: function() {
-			computeStyleTests();
-			return boxSizingReliableVal;
-		},
-		pixelBoxStyles: function() {
-			computeStyleTests();
-			return pixelBoxStylesVal;
-		},
-		pixelPosition: function() {
-			computeStyleTests();
-			return pixelPositionVal;
-		},
-		reliableMarginLeft: function() {
-			computeStyleTests();
-			return reliableMarginLeftVal;
-		},
-		scrollboxSize: function() {
-			computeStyleTests();
-			return scrollboxSizeVal;
-		}
-	} );
+	return reliableTrDimensionsVal;
+};
 } )();
 
-return support;
-
-} );
+export default support;

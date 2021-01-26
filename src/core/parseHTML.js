@@ -1,14 +1,7 @@
-define( [
-	"../core",
-	"../var/document",
-	"./var/rsingleTag",
-	"../manipulation/buildFragment",
-
-	// This is the only module that needs core/support
-	"./support"
-], function( jQuery, document, rsingleTag, buildFragment, support ) {
-
-"use strict";
+import jQuery from "../core.js";
+import document from "../var/document.js";
+import rsingleTag from "./var/rsingleTag.js";
+import buildFragment from "../manipulation/buildFragment.js";
 
 // Argument "data" should be string of html
 // context (optional): If specified, the fragment will be created in this context,
@@ -29,18 +22,14 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 
 		// Stop scripts or inline event handlers from being executed immediately
 		// by using document.implementation
-		if ( support.createHTMLDocument ) {
-			context = document.implementation.createHTMLDocument( "" );
+		context = document.implementation.createHTMLDocument( "" );
 
-			// Set the base href for the created document
-			// so any parsed elements with URLs
-			// are based on the document's URL (gh-2965)
-			base = context.createElement( "base" );
-			base.href = document.location.href;
-			context.head.appendChild( base );
-		} else {
-			context = document;
-		}
+		// Set the base href for the created document
+		// so any parsed elements with URLs
+		// are based on the document's URL (gh-2965)
+		base = context.createElement( "base" );
+		base.href = document.location.href;
+		context.head.appendChild( base );
 	}
 
 	parsed = rsingleTag.exec( data );
@@ -59,7 +48,3 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 
 	return jQuery.merge( [], parsed.childNodes );
 };
-
-return jQuery.parseHTML;
-
-} );

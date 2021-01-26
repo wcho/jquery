@@ -4,7 +4,7 @@ if ( !jQuery.fn.width ) {
 	return;
 }
 
-QUnit.module( "dimensions", { teardown: moduleTeardown } );
+QUnit.module( "dimensions", { afterEach: moduleTeardown } );
 
 function pass( val ) {
 	return val;
@@ -342,7 +342,7 @@ QUnit.test( "getting dimensions shouldn't modify runtimeStyle see #9233", functi
 QUnit.test( "table dimensions", function( assert ) {
 	assert.expect( 2 );
 
-	var table = jQuery( "<table><colgroup><col/><col/></colgroup><tbody><tr><td></td><td>a</td></tr><tr><td></td><td>a</td></tr></tbody></table>" ).appendTo( "#qunit-fixture" ),
+	var table = jQuery( "<table><colgroup><col></col><col></col></colgroup><tbody><tr><td></td><td>a</td></tr><tr><td></td><td>a</td></tr></tbody></table>" ).appendTo( "#qunit-fixture" ),
 		tdElem = table.find( "td" ).first(),
 		colElem = table.find( "col" ).first().width( 300 );
 
@@ -350,6 +350,66 @@ QUnit.test( "table dimensions", function( assert ) {
 
 	assert.equal( tdElem.width(), tdElem.width(), "width() doesn't alter dimension values of empty cells, see #11293" );
 	assert.equal( colElem.width(), 300, "col elements have width(), see #12243" );
+} );
+
+QUnit.test( "SVG dimensions (basic content-box)", function( assert ) {
+	assert.expect( 8 );
+
+	var svg = jQuery( "<svg style='width: 100px; height: 100px;'></svg>" ).appendTo( "#qunit-fixture" );
+
+	assert.equal( svg.width(), 100 );
+	assert.equal( svg.height(), 100 );
+
+	assert.equal( svg.innerWidth(), 100 );
+	assert.equal( svg.innerHeight(), 100 );
+
+	assert.equal( svg.outerWidth(), 100 );
+	assert.equal( svg.outerHeight(), 100 );
+
+	assert.equal( svg.outerWidth( true ), 100 );
+	assert.equal( svg.outerHeight( true ), 100 );
+
+	svg.remove();
+} );
+
+QUnit.test( "SVG dimensions (content-box)", function( assert ) {
+	assert.expect( 8 );
+
+	var svg = jQuery( "<svg style='width: 100px; height: 100px; box-sizing: content-box; border: 1px solid white; padding: 2px; margin: 3px'></svg>" ).appendTo( "#qunit-fixture" );
+
+	assert.equal( svg.width(), 100 );
+	assert.equal( svg.height(), 100 );
+
+	assert.equal( svg.innerWidth(), 104 );
+	assert.equal( svg.innerHeight(), 104 );
+
+	assert.equal( svg.outerWidth(), 106 );
+	assert.equal( svg.outerHeight(), 106 );
+
+	assert.equal( svg.outerWidth( true ), 112 );
+	assert.equal( svg.outerHeight( true ), 112 );
+
+	svg.remove();
+} );
+
+QUnit.test( "SVG dimensions (border-box)", function( assert ) {
+	assert.expect( 8 );
+
+	var svg = jQuery( "<svg style='width: 100px; height: 100px; box-sizing: border-box; border: 1px solid white; padding: 2px; margin: 3px'></svg>" ).appendTo( "#qunit-fixture" );
+
+	assert.equal( svg.width(), 94, "width" );
+	assert.equal( svg.height(), 94, "height" );
+
+	assert.equal( svg.innerWidth(), 98, "innerWidth" );
+	assert.equal( svg.innerHeight(), 98, "innerHeight" );
+
+	assert.equal( svg.outerWidth(), 100, "outerWidth" );
+	assert.equal( svg.outerHeight(), 100, "outerHeight" );
+
+	assert.equal( svg.outerWidth( true ), 106, "outerWidth( true )" );
+	assert.equal( svg.outerHeight( true ), 106, "outerHeight( true )" );
+
+	svg.remove();
 } );
 
 QUnit.test( "box-sizing:border-box child of a hidden elem (or unconnected node) has accurate inner/outer/Width()/Height()  see #10413", function( assert ) {
@@ -476,7 +536,7 @@ QUnit.test( "allow modification of coordinates argument (gh-1848)", function( as
 	assert.expect( 1 );
 
 	var offsetTop,
-		element = jQuery( "<div/>" ).appendTo( "#qunit-fixture" );
+		element = jQuery( "<div></div>" ).appendTo( "#qunit-fixture" );
 
 	element.offset( function( index, coords ) {
 		coords.top = 100;
@@ -523,7 +583,7 @@ QUnit.test( "width/height on element with transform (gh-3193)", function( assert
 
 	assert.expect( 2 );
 
-	var $elem = jQuery( "<div style='width: 200px; height: 200px; transform: scale(2);' />" )
+	var $elem = jQuery( "<div style='width: 200px; height: 200px; transform: scale(2);'></div>" )
 		.appendTo( "#qunit-fixture" );
 
 	assert.equal( $elem.width(), 200, "Width ignores transforms" );
@@ -567,7 +627,8 @@ QUnit.test( "width/height on an inline element with percentage dimensions (gh-36
 	}
 );
 
-QUnit.test( "width/height on a table row with phantom borders (gh-3698)", function( assert ) {
+QUnit.test(
+	"width/height on a table row with phantom borders (gh-3698)", function( assert ) {
 	assert.expect( 4 );
 
 	jQuery( "<table id='gh3698' style='border-collapse: separate; border-spacing: 0;'><tbody>" +
@@ -596,14 +657,16 @@ QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
 				return old + adjustment;
 			};
 		},
-		parent = jQuery( "<div/>" )
+		parent = jQuery( "<div></div>" )
 			.css( { position: "absolute", width: "1000px", height: "1000px" } )
 			.appendTo( "#qunit-fixture" ),
-		fraction = jQuery( "<div style='width:4.5px;'/>" ).appendTo( parent ).width() % 1,
+
+		// Workarounds for IE kill fractional output here.
+		fraction = document.documentMode ? 0 : 0.5,
 		borderWidth = 1,
 		padding = 2,
 		size = 100 + fraction,
-		plainBox = jQuery( "<div />" )
+		plainBox = jQuery( "<div></div>" )
 			.css( {
 				"box-sizing": "content-box",
 				position: "absolute",
@@ -625,21 +688,7 @@ QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
 			.css( { position: "relative" } ),
 		$boxes = jQuery(
 			[ plainBox[ 0 ], contentBox[ 0 ], borderBox[ 0 ], relativeBorderBox[ 0 ] ]
-		).appendTo( parent ),
-
-		// Support: IE 9 only
-		// Computed width seems to report content width even with "box-sizing: border-box", and
-		// "overflow: scroll" actually _shrinks_ the element (gh-3699).
-		borderBoxLoss =
-			borderBox.clone().css( { overflow: "auto" } ).appendTo( parent )[ 0 ].offsetWidth -
-			borderBox[ 0 ].offsetWidth;
-
-	if ( borderBoxLoss > 0 ) {
-		borderBox.css( {
-			width: ( size + borderBoxLoss ) + "px",
-			height: ( size + borderBoxLoss ) + "px"
-		} );
-	}
+		).appendTo( parent );
 
 	for ( i = 0; i < 3; i++ ) {
 		if ( i === 1 ) {
@@ -688,6 +737,34 @@ QUnit.test( "interaction with scrollbars (gh-3589)", function( assert ) {
 		assert.equal( relativeBorderBox.outerHeight(), size,
 			"relative border-box outerHeight includes scroll gutter" + suffix );
 	}
+} );
+
+QUnit.test( "outerWidth/Height for table cells and textarea with border-box in IE 11 (gh-4102)", function( assert ) {
+	assert.expect( 5 );
+	var $table = jQuery( "<table class='border-box' style='border-collapse: separate'></table>" ).appendTo( "#qunit-fixture" ),
+		$thead = jQuery( "<thead></thead>" ).appendTo( $table ),
+		$firstTh = jQuery( "<th style='width: 200px;padding: 5px'></th>" ),
+		$secondTh = jQuery( "<th style='width: 190px;padding: 5px'></th>" ),
+		$thirdTh = jQuery( "<th style='width: 180px;padding: 5px'></th>" ),
+
+		// Most browsers completely ignore the border-box and height settings.
+		// The computed height is instead just line-height + border.
+		// Either way, what we're doing in css.js is correct.
+		$td = jQuery( "<td style='height: 20px;padding: 5px;border: 1px solid;line-height:18px'>text</td>" ),
+
+		$tbody = jQuery( "<tbody></tbody>" ).appendTo( $table ),
+		$textarea = jQuery( "<textarea style='height: 0;padding: 2px;border: 1px solid;box-sizing: border-box'></textarea>" ).appendTo( "#qunit-fixture" );
+
+	jQuery( "<tr></tr>" ).appendTo( $thead ).append( $firstTh );
+	jQuery( "<tr></tr>" ).appendTo( $thead ).append( $secondTh );
+	jQuery( "<tr></tr>" ).appendTo( $thead ).append( $thirdTh );
+	jQuery( "<tr><td></td></tr>" ).appendTo( $tbody ).append( $td );
+
+	assert.strictEqual( $firstTh.outerWidth(), 200, "First th has outerWidth 200." );
+	assert.strictEqual( $secondTh.outerWidth(), 200, "Second th has outerWidth 200." );
+	assert.strictEqual( $thirdTh.outerWidth(), 200, "Third th has outerWidth 200." );
+	assert.strictEqual( $td.outerHeight(), 30, "outerHeight of td with border-box should include padding." );
+	assert.strictEqual( $textarea.outerHeight(), 6, "outerHeight of textarea with border-box should include padding and border." );
 } );
 
 } )();

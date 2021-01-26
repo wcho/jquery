@@ -16,6 +16,9 @@ npm-debug.log*
 /dist/*
 !/dist/.eslintrc.json
 
+/amd
+
 /node_modules
 
-/test/node_smoke_tests/lib/ensure_iterability.js
+/test/data/core/jquery-iterability-transpiled.js
+/test/data/qunit-fixture.js

@@ -1,13 +1,9 @@
 // Initialize a jQuery object
-define( [
-	"../core",
-	"../var/document",
-	"./var/rsingleTag",
+import jQuery from "../core.js";
+import document from "../var/document.js";
+import rsingleTag from "./var/rsingleTag.js";
 
-	"../traversing/findFilter"
-], function( jQuery, document, rsingleTag ) {
-
-"use strict";
+import "../traversing/findFilter.js";
 
 // A central reference to the root jQuery(document)
 var rootjQuery,
@@ -63,7 +59,7 @@ var rootjQuery,
 						for ( match in context ) {
 
 							// Properties of context are called as methods if possible
-							if ( jQuery.isFunction( this[ match ] ) ) {
+							if ( typeof this[ match ] === "function" ) {
 								this[ match ]( context[ match ] );
 
 							// ...and otherwise set as attributes
@@ -106,7 +102,7 @@ var rootjQuery,
 
 		// HANDLE: $(function)
 		// Shortcut for document ready
-		} else if ( jQuery.isFunction( selector ) ) {
+		} else if ( typeof selector === "function" ) {
 			return root.ready !== undefined ?
 				root.ready( selector ) :
 
@@ -122,7 +118,3 @@ init.prototype = jQuery.fn;
 
 // Initialize central reference
 rootjQuery = jQuery( document );
-
-return init;
-
-} );

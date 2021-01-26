@@ -1,16 +1,16 @@
-define( [
-	"./core",
-	"./core/access",
-	"./var/isWindow",
-	"./css"
-], function( jQuery, access, isWindow ) {
+import jQuery from "./core.js";
+import access from "./core/access.js";
+import isWindow from "./var/isWindow.js";
 
-"use strict";
+import "./css.js";
 
 // Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
 jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
-	jQuery.each( { padding: "inner" + name, content: type, "": "outer" + name },
-		function( defaultExtra, funcName ) {
+	jQuery.each( {
+		padding: "inner" + name,
+		content: type,
+		"": "outer" + name
+	}, function( defaultExtra, funcName ) {
 
 		// Margin is only for outerHeight, outerWidth
 		jQuery.fn[ funcName ] = function( margin, value ) {
@@ -53,5 +53,4 @@ jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 	} );
 } );
 
-return jQuery;
-} );
+export default jQuery;

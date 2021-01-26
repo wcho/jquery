@@ -1,10 +1,6 @@
-define( [
-	"../../core"
-], function( jQuery ) {
+import jQuery from "../../core.js";
 
-"use strict";
-
-return function( elem, dir, until ) {
+export default function( elem, dir, until ) {
 	var matched = [],
 		truncate = until !== undefined;
 
@@ -17,6 +13,4 @@ return function( elem, dir, until ) {
 		}
 	}
 	return matched;
-};
-
-} );
+}
